@@ -5,13 +5,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import tech.devinhouse.lanchonete.model.Categoria;
-import tech.devinhouse.lanchonete.model.Cliente;
-import tech.devinhouse.lanchonete.model.Pedido;
-import tech.devinhouse.lanchonete.model.Produto;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import tech.devinhouse.lanchonete.model.*;
 import tech.devinhouse.lanchonete.repository.ClienteRepository;
 import tech.devinhouse.lanchonete.repository.PedidoRepository;
 import tech.devinhouse.lanchonete.repository.ProdutoRepository;
+import tech.devinhouse.lanchonete.service.UsuarioService;
 
 import java.util.List;
 
@@ -30,8 +30,13 @@ public class M2s09Application {
 	}
 
 	@Bean
+	public PasswordEncoder getPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
 	CommandLineRunner run(ProdutoRepository produtoRepo, ClienteRepository clienteRepo,
-						  PedidoRepository pedidoRepo) {
+						  PedidoRepository pedidoRepo, UsuarioService usuarioService) {
 		return args -> {
 			List<Produto> produtos = produtoRepo.findAll();
 			if (produtos.isEmpty()) {
@@ -60,6 +65,13 @@ public class M2s09Application {
 				pedido.adicionar(produtos.get(0), 2);
 				pedido.adicionar(produtos.get(1), 3);
 				pedidoRepo.save(pedido);
+			}
+			var usuarios = usuarioService.consultar();
+			if (usuarios.isEmpty()) {
+				usuarioService.inserir(new Usuario("James Kirk", "james@enterprise.com", "123456", Role.GERENTE));
+				usuarioService.inserir(new Usuario("Spock", "spock@enterprise.com", "123456", Role.GERENTE));
+				usuarioService.inserir(new Usuario("Leonard McCoy", "mccoy@enterprise.com", "123456", Role.FUNCIONARIO));
+				usuarioService.inserir(new Usuario("Montgomery Scott", "scott@enterprise.com", "123456", Role.CLIENTE));
 			}
 		};
 	}
