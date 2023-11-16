@@ -41,6 +41,7 @@ public class UsuarioController {
     }
 
     @PostMapping
+    @RolesAllowed("GERENTE")
     public ResponseEntity<UsuarioResponse> inserir(@RequestBody @Valid UsuarioRequest request) {
         Usuario usuario = mapper.map(request, Usuario.class);
         usuario = usuarioService.inserir(usuario);

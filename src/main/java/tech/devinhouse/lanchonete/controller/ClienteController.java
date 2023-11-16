@@ -1,5 +1,6 @@
 package tech.devinhouse.lanchonete.controller;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class ClienteController {
 
 
     @GetMapping
+    @RolesAllowed({"GERENTE", "FUNCIONARIO"})
     public ResponseEntity<List<ClienteResponse>> consultar() {
         List<Cliente> clientes = service.consultar();
         List<ClienteResponse> resp = new ArrayList<>();
@@ -40,6 +42,7 @@ public class ClienteController {
     }
 
     @GetMapping("/{cpf}")
+    @RolesAllowed({"GERENTE", "FUNCIONARIO"})
     public ResponseEntity<ClienteResponse> consultar(@PathVariable("cpf") Long cpf) {
         Cliente cliente = service.consultar(cpf);
         ClienteResponse resp = mapper.map(cliente, ClienteResponse.class);
@@ -47,6 +50,7 @@ public class ClienteController {
     }
 
     @PostMapping
+    @RolesAllowed("GERENTE")
     public ResponseEntity<ClienteResponse> criar(@RequestBody @Valid ClienteRequest request) {
         var cliente = mapper.map(request, Cliente.class);
         cliente = service.salvar(cliente);
@@ -55,6 +59,7 @@ public class ClienteController {
     }
 
     @PutMapping("{cpf}")
+    @RolesAllowed("GERENTE")
     public ResponseEntity<ClienteResponse> atualizar(@PathVariable("cpf") Long cpf, @RequestBody @Valid ClienteRequest request) {
         var cliente = mapper.map(request, Cliente.class);
         cliente.setCpf(cpf);
@@ -64,6 +69,7 @@ public class ClienteController {
     }
 
     @DeleteMapping("{cpf}")
+    @RolesAllowed("GERENTE")
     public ResponseEntity excluir(@PathVariable("cpf") Long cpf) {
         service.excluir(cpf);
         return ResponseEntity.noContent().build();

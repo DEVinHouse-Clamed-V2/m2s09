@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -15,10 +16,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import tech.devinhouse.lanchonete.model.Role;
 
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true) // to allow roles validated by methods annotations
+// Para permitir a validacao de Roles com anotacoes direto nos controllers
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfiguration {
 
     @Autowired
@@ -36,9 +39,9 @@ public class SecurityConfiguration {
         http.csrf(csrf -> csrf.disable())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.GET, "/usuarios").permitAll()  // white list: fetch users list
-                                .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll() // white list: login endpoint
-                                .anyRequest().authenticated()  // todos os outros endpoints tem que ser autenticados
+                        .requestMatchers(HttpMethod.GET, "/usuarios").permitAll()  // white list: fetch users list
+                        .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll() // white list: login endpoint
+                        .anyRequest().authenticated()  // todos os outros endpoints tem que ser autenticados
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAutenticadorFilter, UsernamePasswordAuthenticationFilter.class);

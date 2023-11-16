@@ -28,6 +28,7 @@ public class PedidoController {
 
 
     @GetMapping
+    @RolesAllowed({"GERENTE","FUNCIONARIO"})
     public ResponseEntity<List<PedidoResponse>> consultar() {
         List<Pedido> pedidos = service.consultar();
         //TODO: configurar para fazer mapeamento com ModelMapper
@@ -38,6 +39,7 @@ public class PedidoController {
     }
 
     @PostMapping
+    @RolesAllowed({"GERENTE","FUNCIONARIO","CLIENTE"})
     public ResponseEntity<PedidoResponse> criar(@RequestBody @Valid PedidoRequest request) {
         var pedido = new Pedido();
         pedido.setCliente(new Cliente(request.getCpf()));
@@ -51,6 +53,7 @@ public class PedidoController {
     }
 
     @DeleteMapping("{id}")
+    @RolesAllowed("GERENTE")
     public ResponseEntity excluir(@PathVariable("id") Integer id) {
         service.excluir(id);
         return ResponseEntity.noContent().build();

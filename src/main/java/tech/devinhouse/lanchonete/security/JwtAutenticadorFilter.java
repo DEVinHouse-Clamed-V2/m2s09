@@ -47,6 +47,7 @@ public class JwtAutenticadorFilter extends OncePerRequestFilter {
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(email, null, usuario.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            // Linha abaixo coloca o usuario como autenticado (principals)
             SecurityContextHolder.getContext().setAuthentication(authenticationToken); // indica nesta sessao http o principal (usuario autenticado)
             filterChain.doFilter(request, response);
         } catch (JWTVerificationException ex) {
